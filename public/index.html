@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Meu Primeiro jogo</title>
+    <style>
+        #screen {
+            border: 10px solid #ccc;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            image-rendering: -moz-crisp-edges;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="screen" width="10" height="10"></canvas>
+    <script type="module">
+        import createGame from './game.js'
+        import renderScreen from './render-screen.js'
+        import createKeyBoardListener from './keyboard-listener.js'
+       
+        const game = createGame()
+        const keyBoarListener = createKeyBoardListener(document)
+        keyBoarListener.subscribe(game.moverPlayer)
+
+        const screen = document.getElementById('screen')
+        renderScreen(screen, game, requestAnimationFrame)
+
+        game.addFruit({ fruitId: 'fruit1', fruitX: 5, fruitY: 2 })
+        game.addFruit({ fruitId: 'fruit2', fruitX: 7, fruitY: 3 })
+        game.addPlayer({ playerId: 'player1', playerX: 1, playerY: 3 })
+        game.addPlayer({ playerId: 'player2', playerX: 3, playerY: 4 })
+        game.addPlayer({ playerId: 'player3', playerX: 5, playerY: 5 })
+
+    </script>
+</body>
+
+</html>
