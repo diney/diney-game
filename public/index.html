@@ -85,8 +85,7 @@
         const keyBoarListener = createKeyBoardListener(document)
 
         const socket = io()
-        socket.on('connect', () => {
-            console.log(socket.id)
+        socket.on('connect', () => {           
             const playerId = socket.id
             console.log(`Player connceted on Client with id:${playerId}`)
 

@@ -18,9 +18,7 @@ export default function renderScreen(screen,scoreTable,game,requestAnimationFram
             //maron        
             context.fillStyle = '#996600';
             context.globalAlpha = 0.50;
-            context.fillRect(player.tamanho[j].x, player.tamanho[j].y, 1, 1);
-        
-
+            context.fillRect(player.tamanho[j].x, player.tamanho[j].y, 1, 1);    
         }
 
         if (playerId === currentPlayerId) {
@@ -41,11 +39,8 @@ export default function renderScreen(screen,scoreTable,game,requestAnimationFram
           context.fillStyle = "#00ffff";
           context.globalAlpha = 1;
           context.fillRect(player.tamanho[0].x, player.tamanho[0].y, 1, 1);
-        }
-        
-        
-      }   
-  
+        }       
+      }     
     
     for (const fruitId in game.state.fruits) {
         const fruit = game.state.fruits[fruitId]
@@ -77,6 +72,7 @@ export default function renderScreen(screen,scoreTable,game,requestAnimationFram
                 playerId: socketId,
                 x: player.x,
                 y: player.y,
+                tamanho:player.tamanho,
                 score: player.score,
             })
         }
@@ -109,8 +105,8 @@ export default function renderScreen(screen,scoreTable,game,requestAnimationFram
         if (currentPlayerFromTopScore) {
             scoreTableInnerHTML += `
                 <tr class="current-player bottom">
-                    <td class="socket-id">${currentPlayerFromTopScore.id} EU </td>
-                    <td class="score-value">${currentPlayerFromTopScore.score}</td>
+                    <td >${currentPlayerFromTopScore.id} EU </td>
+                    <td >${currentPlayerFromTopScore.score}</td>
                 </tr>
             `
         }

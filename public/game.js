@@ -34,15 +34,16 @@ export default function createGame() {
     const playerX = "playerX" in command ? command.playerX : Math.floor(Math.random() * state.screen.width);
     const playerY =  "playerY" in command ? command.playerY : Math.floor(Math.random() * state.screen.height);   
     const score = 0;
-    const tamanho = [{x:playerX, y:playerY}]; 
-   
+    const tamanho = [{x:playerX, y:playerY}];    
 
     state.players[playerId] = {
-      x: playerX,
+      playerId: playerId,
+     x: playerX,
       y: playerY,    
       score,
       tamanho,
     };
+    
     notifyAll({
       type: "add-player",
       playerId: playerId,
@@ -67,9 +68,9 @@ export default function createGame() {
     const fruitX = command  ? command.fruitX : Math.floor(Math.random() * state.screen.width);
     const fruitY = command  ? command.fruitY : Math.floor(Math.random() * state.screen.height);
 
-    Object.entries(state.fruits).forEach(([key, value]) => {        
-      if (value.x === fruitX && value.y === fruitY) {       
-        delete state.fruits[fruitId];
+    Object.entries(state.fruits).forEach(([key, value]) => {       
+        if (value.x === fruitX && value.y === fruitY) {    
+        delete state.fruits[key];
       }
     });
 
@@ -99,26 +100,28 @@ export default function createGame() {
   function moverPlayer(command) {
     notifyAll(command);
     const acceptedMoves = {
-      ArrowUp(player) {
-        console.log(player.tamanho[0].y)
+      ArrowUp(player) {      
         if (player.tamanho[0].y - 1 >= 0) {
           player.tamanho[0].y = player.tamanho[0].y - 1;
+       
         }
       },
-
       ArrowRight(player) {
         if (player.tamanho[0].x + 1 < state.screen.width) {
           player.tamanho[0].x = player.tamanho[0].x + 1;
+        
         }
       },
       ArrowDown(player) {
         if (player.tamanho[0].y + 1 < state.screen.height) {
           player.tamanho[0].y = player.tamanho[0].y + 1;
+       
         }
       },
       ArrowLeft(player) {
         if (player.tamanho[0].x - 1 >= 0) {
           player.tamanho[0].x = player.tamanho[0].x - 1;
+         
         }
       },
     };
@@ -126,42 +129,61 @@ export default function createGame() {
     const playerId = command.playerId;
     const player = state.players[command.playerId];
     const moveFunction = acceptedMoves[keyPressed];
-    
-    for (let i = state.players[playerId].tamanho.length - 1; i > 0; i--) {
-      state.players[playerId].tamanho[i].x = state.players[playerId].tamanho[i-1].x
-      state.players[playerId].tamanho[i].y = state.players[playerId].tamanho[i-1].y
-     
-  }
 
-
-    if (player && moveFunction) {    
+    if (player && moveFunction) {
       moveFunction(player);
+      checkFroPlayer(player)
       checkForfruitCollision(playerId);
+      move(player)
+      
     }
   }
 
+  function move(player) {
+    for (let i = player.tamanho.length - 1; i > 0; i--) {
+      player.tamanho[i].x = player.tamanho[i - 1].x
+      player.tamanho[i].y = player.tamanho[i - 1].y
+
+    }
+  }
+
+  function checkFroPlayer(player) {
+
+    for (const x in state.players) {
+      const playerId = state.players[x]
+      console.log('playerId  ' + playerId.playerId)
+      if (player.playerId != playerId.playerId) {
+        if (player.tamanho[0].x === playerId.tamanho[0].x && player.tamanho[0].y === playerId.tamanho[0].y) {
+          player.score += playerId.score;  
+
+          for (let k = 1; k < playerId.tamanho.length ; k++) {            
+              player.tamanho.push(playerId.tamanho[k]);             
+                                 
+          }
+          playerId.tamanho.splice(1, playerId.tamanho.length);         
+          playerId.score = 0     
+          
+   
+        }
+      }
+    }
+  } 
+
   function checkForfruitCollision(playerId) {
     const player = state.players[playerId];
-  
 
     for (const fruitId in state.fruits) {
       const fruit = state.fruits[fruitId];
-      console.log(`Checking ${playerId} score ${player.score}and ${fruitId}`);
+     // console.log(`Checking ${playerId} score ${player.score}and ${fruitId}`);
       if (player.tamanho[0].x === fruit.x && player.tamanho[0].y === fruit.y) {
-        console.log(`COLLISION between ${playerId} and ${fruitId}`);
+      //  console.log(`COLLISION between ${playerId} and ${fruitId}`);
         removeFruit({ fruitId: fruitId });
-        player.score += 1;        
-       
-
-       player.tamanho.push({
+        player.score += 1;
+        player.tamanho.push({
           x: player.tamanho[0].x,
           y: player.tamanho[0].y
-          
-      });
+        });      
 
-
-      console.log(player.tamanho);
-        
       }
     }
   }
@@ -175,5 +197,6 @@ export default function createGame() {
     setState,
     subscribe,
     start,
+    
   };
 }
